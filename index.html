@@ -507,6 +507,7 @@
         .submit-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 30px rgba(124, 77, 255, 0.6);
+
         }
 
         .submit-btn:active {
@@ -791,7 +792,7 @@
                                 </div>
                                 <div class="camp-info">
                                     <div class="camp-name">Physics</div>
-                                    <div class="camp-schedule">10AM to 12PM, 16-19 May</div>
+                                    <div class="camp-schedule">10AM to 12PM, 28-31 May</div>
                                 </div>
                             </label>
                         </div>
@@ -805,7 +806,7 @@
                                 </div>
                                 <div class="camp-info">
                                     <div class="camp-name">Life Science</div>
-                                    <div class="camp-schedule">4PM to 6PM, 16-19 May</div>
+                                    <div class="camp-schedule">10:00 AM to 12:00 PM, 16-19 May</div>
                                 </div>
                             </label>
                         </div>
@@ -819,7 +820,7 @@
                                 </div>
                                 <div class="camp-info">
                                     <div class="camp-name">Chemistry</div>
-                                    <div class="camp-schedule">10AM to 12PM, 16-19 May</div>
+                                    <div class="camp-schedule">4PM to 6PM, 20-23 May</div>
                                 </div>
                             </label>
                         </div>
@@ -833,7 +834,7 @@
                                 </div>
                                 <div class="camp-info">
                                     <div class="camp-name">Mathematics</div>
-                                    <div class="camp-schedule">9AM to 11AM, 16-19 May</div>
+                                    <div class="camp-schedule">10AM to 12PM, 24-27 May</div>
                                 </div>
                             </label>
                         </div>
@@ -847,7 +848,7 @@
                                 </div>
                                 <div class="camp-info">
                                     <div class="camp-name">Arduino</div>
-                                    <div class="camp-schedule">9AM to 11AM, 16-19 May</div>
+                                    <div class="camp-schedule">10AM to 12PM, 20-23 May</div>
                                 </div>
                             </label>
                         </div>
@@ -861,7 +862,7 @@
                                 </div>
                                 <div class="camp-info">
                                     <div class="camp-name">Electronics & Application</div>
-                                    <div class="camp-schedule">9AM to 11AM, 16-19 May</div>
+                                    <div class="camp-schedule">4PM to 6PM, 24-27 May</div>
                                 </div>
                             </label>
                         </div>
@@ -875,7 +876,7 @@
                                 </div>
                                 <div class="camp-info">
                                     <div class="camp-name">Fantasticity Electricity</div>
-                                    <div class="camp-schedule">9AM to 11AM, 16-19 May</div>
+                                    <div class="camp-schedule">4PM to 6PM, 16-19 May</div>
                                 </div>
                             </label>
                         </div>
@@ -889,7 +890,7 @@
                                 </div>
                                 <div class="camp-info">
                                     <div class="camp-name">Robotics</div>
-                                    <div class="camp-schedule">9AM to 11AM, 16-19 May</div>
+                                    <div class="camp-schedule">4PM to 6PM, 1-4 June</div>
                                 </div>
                             </label>
                         </div>
@@ -903,7 +904,7 @@
                                 </div>
                                 <div class="camp-info">
                                     <div class="camp-name">Astronomy</div>
-                                    <div class="camp-schedule">9AM to 11AM, 16-19 May</div>
+                                    <div class="camp-schedule">10AM to 12PM, 1-4 June</div>
                                 </div>
                             </label>
                         </div>
@@ -1090,7 +1091,7 @@
                     value: 80, 
                     density: { 
                         enable: true, 
-                        value_area: 800 
+                        value_area: 500 
                     } 
                 },
                 color: { 
@@ -1115,14 +1116,14 @@
                     enable: true,
                     distance: 150,
                     color: "#7c4dff",
-                    opacity: 0.4,
+                    opacity: 0.8,
                     width: 1
                 },
                 move: { 
                     enable: true, 
-                    speed: 3, 
+                    speed: 6, 
                     direction: "none", 
-                    random: false, 
+                    random: true, 
                     straight: false, 
                     out_mode: "out", 
                     bounce: false 
@@ -1519,7 +1520,7 @@
 
         // Admin authentication
         function authenticateUser() {
-            const authorizedStaff = ["suman", "subhradeep", "manoranjan", "chandan", "dhrubajyoti"];
+            const authorizedStaff = ["suman", "subhradeep", "manoranjan", "chandan", "dhrubajyoti" , "binoy"];
             
             // Show a nice authentication modal instead of prompt
             const authModal = document.createElement('div');
