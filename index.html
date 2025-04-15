@@ -144,7 +144,7 @@
             color: white;
             font-size: 1.2rem;
             transition: all 0.3s ease;
-            position: relative;
+            positionancel relative;
             overflow: hidden;
         }
 
@@ -507,7 +507,6 @@
         .submit-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 30px rgba(124, 77, 255, 0.6);
-
         }
 
         .submit-btn:active {
@@ -650,7 +649,8 @@
                 flex-direction: column;
                 padding: 1rem;
             }
- cheques            .nav-links {
+            
+            .nav-links {
                 flex-direction: column;
                 width: 100%;
                 margin-top: 1rem;
@@ -1008,17 +1008,6 @@
                         <option value="" disabled selected>Select Year</option>
                     </select>
                 </div>
-                
-                <div class="form-group stats-select">
-                    <label for="monthSelector" class="form-label">
-                        <i class="fas fa-calendar-alt"></i>
-                        Select Month
-                    </label>
-                    <select id="monthSelector" class="form-control" disabled>
-                        <option value="" disabled selected>Select Month</option>
-                        <option value="05">May</option>
-                    </select>
-                </div>
             </div>
             
             <table class="stats-table">
@@ -1202,29 +1191,22 @@
             yearSelector.appendChild(option);
         }
 
-        // Handle year/month selection for statistics
+        // Handle year selection for statistics
         function checkAndFetchStatistics() {
             const selectedYear = document.getElementById("yearSelector").value;
-            const selectedMonth = document.getElementById("monthSelector").value;
             
-            if (selectedYear && selectedMonth) {
-                fetchStatistics(selectedYear, selectedMonth);
+            if (selectedYear) {
+                fetchStatistics(selectedYear);
             }
         }
 
         // Year selector event
         document.getElementById("yearSelector").addEventListener("change", function() {
-            document.getElementById("monthSelector").disabled = false;
             checkAndFetchStatistics();
         });
 
-        // Month selector event
-        document.getElementById("monthSelector").addEventListener("change", function() {
-            checkAndFetchStatistics();
-        });
-
-        // Fetch statistics (mock data for demo)
-        function fetchStatistics(year, month) {
+        // Fetch statistics
+        function fetchStatistics(year) {
             const scriptUrl = 'https://script.google.com/macros/s/AKfycbyp0hkPc2vDg6Pgy4mQGm3rY-30rWf5SAejrI8OtN5JCMVIeU_4uQYyLb8-3TMW_ETJ/exec';
             
             // Show loading state
@@ -1232,7 +1214,7 @@
                 cell.textContent = 'Loading...';
             });
             
-            fetch(`${scriptUrl}?year=${year}&month=${month}`)
+            fetch(`${scriptUrl}?year=${year}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -1244,7 +1226,7 @@
                     throw new Error(data.error);
                 }
                 
-                // Update the statistics table with the specific format
+                // Update the statistics table
                 document.getElementById("scienceToyTotal").textContent = data["Science Toy"] || 0;
                 document.getElementById("physicsTotal").textContent = data["Physics"] || 0;
                 document.getElementById("lifeScienceTotal").textContent = data["Life Science"] || 0;
@@ -1355,6 +1337,38 @@
             "Astronomy": "https://chat.whatsapp.com/REPLACE_WITH_YOUR_ASTRONOMY_LINK"
         };
 
+        // Registration ID generation
+        function generateRegistrationIds(camps) {
+            const year = "25";
+            const regIds = [];
+            
+            camps.forEach((camp, index) => {
+                let subjectCode = "";
+                let sequence = (1001 + index).toString().padStart(4, '0');
+                
+                switch(camp) {
+                    case "Science Toy": subjectCode = "S"; break;
+                    case "Physics": subjectCode = "P"; break;
+                    case "Life Science": subjectCode = "L"; break;
+                    case "Chemistry": subjectCode = "C"; break;
+                    case "Mathematics": subjectCode = "M"; break;
+                    case "Arduino": subjectCode = "A"; break;
+                    case "Electronics & Application": subjectCode = "E"; break;
+                    case "Fantasticity Electricity": subjectCode = "F"; break;
+                    case "Robotics": subjectCode = "R"; break;
+                    case "Astronomy": subjectCode = "AS"; break;
+                }
+                
+                if (camps.length === 1) {
+                    regIds.push(`DSC/${camp}/${sequence}/${year}`);
+                } else {
+                    regIds.push(`DSC/${subjectCode}/${sequence}/${year}`);
+                }
+            });
+            
+            return regIds;
+        }
+
         function sendToGoogleSheet(event) {
             event.preventDefault();
             
@@ -1380,10 +1394,14 @@
                 return;
             }
 
-            // Append camps and total cost to form data
+            // Generate registration IDs
+            const registrationIds = generateRegistrationIds(camps);
+            
+            // Append data to form
             formData.append('camps', camps.join(', '));
             formData.append('totalCost', totalCost);
             formData.append('receiptNumber', receiptNumber);
+            formData.append('registrationIds', registrationIds.join(', '));
 
             // Show loading state
             const submitBtn = form.querySelector('button[type="submit"]');
@@ -1403,11 +1421,11 @@
             })
             .then(result => {
                 alert('Registration successful!');
-                generatePDF();
+                generatePDF(registrationIds);
                 
                 // Prepare WhatsApp message with group links for selected camps
-                const groupLinks = camps.map(camp => `${camp, campGroupLinks[camp] || 'No group link available'}`).join('\n');
-                const message = `Thank you for registering for Vocational Science Camp 2025! Join the WhatsApp groups for your selected camps:\n${groupLinks}`;
+                const groupLinks = camps.map(camp => `${camp}: ${campGroupLinks[camp] || 'No group link available'}`).join('\n');
+                const message = `Thank you for registering for Vocational Science Camp 2025!\nYour Registration IDs: ${registrationIds.join(', ')}\nJoin the WhatsApp groups for your selected camps:\n${groupLinks}`;
                 const encodedMessage = encodeURIComponent(message);
                 const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
                 
@@ -1428,9 +1446,9 @@
         }
 
         // Generate PDF receipt
-        function generatePDF() {
+        function generatePDF(registrationIds) {
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('1', 'mm',  [215.9, 110.0]);
+            const doc = new jsPDF('l', 'mm', [215.9, 110.0]);
 
             // Collect form data
             const studentName = document.getElementById('studentName').value;
@@ -1449,80 +1467,94 @@
             
             const currentDate = new Date();
             const formattedDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`;
-            const registrationId = `DSCP-${Date.now().toString().slice(-6)}`;
 
             // QR code data
-            const qrData = `VSC 2025 Registration\nID: ${registrationId}\nName: ${studentName}\nClass: ${classValue}\nSchool: ${schoolName}\nCamps: ${campList}\nAmount: ₹${totalCost}\nReceipt: ${receiptNumber}\nDate: ${formattedDate}`;
+            const qrData = `VSC 2025 Registration\nIDs: ${registrationIds.join(', ')}\nName: ${studentName}\nClass: ${classValue}\nSchool: ${schoolName}\nCamps: ${campList}\nAmount: ₹${totalCost}\nReceipt: ${receiptNumber}\nDate: ${formattedDate}`;
 
-            // Generate QR code
+            // Generate QR code with dots and logo
             const qrCanvas = document.createElement('canvas');
-            QRCode.toCanvas(qrCanvas, qrData, { width: 80 }, function(error) {
+            QRCode.toCanvas(qrCanvas, qrData, {
+                width: 80,
+                margin: 2,
+                color: {
+                    dark: '#000000',
+                    light: '#ffffff'
+                },
+                shape: 'circle', // Use dots instead of squares
+                logo: {
+                    src: 'https://sciencecitykolkata.org.in/wp-content/uploads/2020/02/NCSM-Logo-460x460-1.png',
+                    width: 20,
+                    height: 20
+                }
+            }, function(error) {
                 if (error) console.error(error);
             });
 
             // Convert QR code to data URL
-            const qrCodeDataURL = qrCanvas.toDataURL('image/png');
+            setTimeout(() => {
+                const qrCodeDataURL = qrCanvas.toDataURL('image/png');
 
-            // Add content to PDF
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(16);
-            doc.setTextColor(124, 77, 255);
-            doc.text('Summer Hobby Camp 2025', 105, 10, { align: 'center' });
-            
-            doc.setFontSize(10);
-            doc.setTextColor(100);
-            doc.text('District Science Centre, Purulia | A unit of NCSM, Ministry of Culture, Govt. of India', 105, 15, { align: 'center' });
-            
-            // Add line separator
-            doc.setDrawColor(124, 77, 255);
-            doc.setLineWidth(0.5);
-            doc.line(20, 20, 185, 20);
-            
-            // Add registration details
-            doc.setFontSize(12);
-            doc.setTextColor(0);
-            doc.setFont('helvetica', 'bold');
-            doc.text('REGISTRATION RECEIPT', 105, 30, { align: 'center' });
-            
-            doc.setFont('helvetica', 'normal');
-            doc.text(`Registration ID: ${registrationId}`, 20, 40);
-            doc.text(`Date: ${formattedDate}`, 150, 40);
-            doc.text(`Receipt No: ${receiptNumber}`, 20, 45); // Added receipt number
-            
-            // Student details
-            doc.setFontSize(11);
-            doc.text(`Student Name: ${studentName}`, 20, 55);
-            doc.text(`Class: ${classValue}`, 20, 60);
-            doc.text(`School: ${schoolName}`, 20, 65);
-            doc.text(`Address: ${address}`, 20, 70);
-            doc.text(`WhatsApp: ${whatsapp}`, 20, 75);
-            
-            // Selected camps
-            doc.text(`Selected Camps: ${campList}`, 20, 85);
-            doc.text(`Total Fees: ₹${totalCost}`, 20, 90);
-            
-            // Add QR code
-            doc.addImage(qrCodeDataURL, 'PNG', 150, 50, 35, 35);
-            doc.setTextColor(100);
-            doc.setFontSize(8);
-            doc.text('Scan QR code to verify registration', 155, 90, { align: 'center' });
-            
-            // Add footer
-            doc.setDrawColor(200);
-            doc.line(20, 95, 185, 95);
-            doc.setFontSize(9);
-            doc.text('This is an auto-generated receipt. Please bring this PDF to the camp.', 105, 100, { align: 'center' });
-            doc.text('© DSC Innovation Hub, Purulia | Contact: dscinnovationhub@gmail.com', 105, 105, { align: 'center' });
-            
-            // Save PDF
-            doc.save(`VSC_Registration_${registrationId}.pdf`);
+                // Add content to PDF
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(16);
+                doc.setTextColor(124, 77, 255);
+                doc.text('Summer Hobby Camp 2025', 105, 10, { align: 'center' });
+                
+                doc.setFontSize(10);
+                doc.setTextColor(100);
+                doc.text('District Science Centre, Purulia | A unit of NCSM, Ministry of Culture, Govt. of India', 105, 15, { align: 'center' });
+                
+                // Add line separator
+                doc.setDrawColor(124, 77, 255);
+                doc.setLineWidth(0.5);
+                doc.line(20, 20, 185, 20);
+                
+                // Add registration details
+                doc.setFontSize(12);
+                doc.setTextColor(0);
+                doc.setFont('helvetica', 'bold');
+                doc.text('REGISTRATION RECEIPT', 105, 30, { align: 'center' });
+                
+                doc.setFont('helvetica', 'normal');
+                doc.text(`Registration IDs: ${registrationIds.join(', ')}`, 20, 40);
+                doc.text(`Date: ${formattedDate}`, 150, 40);
+                doc.text(`Receipt No: ${receiptNumber}`, 20, 45);
+                
+                // Student details
+                doc.setFontSize(11);
+                doc.text(`Student Name: ${studentName}`, 20, 55);
+                doc.text(`Class: ${classValue}`, 20, 60);
+                doc.text(`School: ${schoolName}`, 20, 65);
+                doc.text(`Address: ${address}`, 20, 70);
+                doc.text(`WhatsApp: ${whatsapp}`, 20, 75);
+                
+                // Selected camps
+                doc.text(`Selected Camps: ${campList}`, 20, 85);
+                doc.text(`Total Fees: ₹${totalCost}`, 20, 90);
+                
+                // Add QR code
+                doc.addImage(qrCodeDataURL, 'PNG', 150, 40, 35, 35);
+                doc.setTextColor(100);
+                doc.setFontSize(8);
+                doc.text('Scan QR code to verify registration', 155, 90, { align: 'center' });
+                
+                // Add footer
+                doc.setDrawColor(200);
+                doc.line(20, 95, 185, 95);
+                doc.setFontSize(9);
+                doc.text('This is an auto-generated receipt. Please bring this PDF to the camp.', 105, 100, { align: 'center' });
+                doc.text('© DSC Innovation Hub, Purulia | Contact: dscpurulia@gmail.com', 105, 105, { align: 'center' });
+                
+                // Save PDF
+                doc.save(`VSC_Registration_${registrationIds[0].split('/').join('_')}.pdf`);
+            }, 100);
         }
 
         // Admin authentication
         function authenticateUser() {
-            const authorizedStaff = ["suman", "subhradeep", "manoranjan", "chandan", "dhrubajyoti" , "binoy"];
+            const authorizedStaff = ["suman", "subhradeep", "manoranjan", "chandan", "dhrubajyoti", "binoy"];
             
-            // Show a nice authentication modal instead of prompt
+            // Show authentication modal
             const authModal = document.createElement('div');
             authModal.style.position = 'fixed';
             authModal.style.top = '0';
