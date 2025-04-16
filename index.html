@@ -1394,83 +1394,84 @@
             
             return regIds;
         }
+function sendToGoogleSheet(event) {
+    event.preventDefault();
+    
+    const form = document.getElementById('registrationForm');
+    const formData = new FormData(form);
+    
+    // Validate receipt number format
+    const receiptNumber = document.getElementById('receiptNumber').value;
+    if (!/^\d{2}\/\d{4}$/.test(receiptNumber)) {
+        alert('Please enter receipt number in XX/XXXX format');
+        return;
+    }
 
-        function sendToGoogleSheet(event) {
-            event.preventDefault();
-            
-            const form = document.getElementById('registrationForm');
-            const formData = new FormData(form);
-            
-            // Validate receipt number format
-            const receiptNumber = document.getElementById('receiptNumber').value;
-            if (!/^\d{2}\/\d{4}$/.test(receiptNumber)) {
-                alert('Please enter receipt number in XX/XXXX format');
-                return;
-            }
+    // Get selected camps
+    const camps = [];
+    const checkboxes = document.querySelectorAll('input[name="camps"]:checked');
+    checkboxes.forEach(checkbox => camps.push(checkbox.value));
+    
+    const totalCost = camps.length * 500;
 
-            // Get selected camps
-            const camps = [];
-            const checkboxes = document.querySelectorAll('input[name="camps"]:checked');
-            checkboxes.forEach(checkbox => camps.push(checkbox.value));
-            
-            const totalCost = camps.length * 500;
+    if (camps.length === 0) {
+        alert('Please select at least one camp.');
+        return;
+    }
 
-            if (camps.length === 0) {
-                alert('Please select at least one camp.');
-                return;
-            }
+    // Generate registration IDs
+    const registrationIds = generateRegistrationIds(camps);
+    
+    // Append data to form
+    formData.delete('camps'); // Remove any existing camps from FormData
+    formData.append('camps', camps.join(', ')); // Send as comma-separated string
+    formData.append('totalCost', totalCost);
+    formData.append('receiptNumber', receiptNumber);
+    formData.append('registrationIds', registrationIds.join(', '));
 
-            // Generate registration IDs
-            const registrationIds = generateRegistrationIds(camps);
-            
-            // Append data to form
-            formData.append('camps', camps.join(', '));
-            formData.append('totalCost', totalCost);
-            formData.append('receiptNumber', receiptNumber);
-            formData.append('registrationIds', registrationIds.join(', '));
+    
+    // Show loading state
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    submitBtn.disabled = true;
 
-            // Show loading state
-            const submitBtn = form.querySelector('button[type="submit"]');
-            const originalBtnText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-            submitBtn.disabled = true;
-
-            fetch(googleSheetUrl, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.text();
-            })
-            .then(result => {
-                alert('Registration successful!');
-                generatePDF(registrationIds);
-                
-                // Prepare WhatsApp message with group links for selected camps
-                const groupLinks = camps.map(camp => `${camp}: ${campGroupLinks[camp] || 'No group link available'}`).join('\n');
-                const message = `Thank you for registering for Vocational Science Camp 2025!\nYour Registration IDs: ${registrationIds.join(', ')}\nJoin the WhatsApp groups for your selected camps:\n${groupLinks}`;
-                const encodedMessage = encodeURIComponent(message);
-                const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
-                
-                // Open WhatsApp with the pre-filled message
-                window.open(whatsappUrl, '_blank');
-                
-                form.reset();
-                updateSelectedCamps();
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Registration failed. Please try again or contact support.');
-            })
-            .finally(() => {
-                submitBtn.innerHTML = originalBtnText;
-                submitBtn.disabled = false;
-            });
+    fetch(googleSheetUrl, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
         }
-
+        return response.text();
+    })
+    .then(result => {
+        console.log('Server response:', result);
+        alert('Registration successful!');
+        generatePDF(registrationIds);
+        
+        // Prepare WhatsApp message with group links for selected camps
+        const groupLinks = camps.map(camp => `${camp}: ${campGroupLinks[camp] || 'No group link available'}`).join('\n');
+        const message = `Thank you for registering for Vocational Science Camp 2025!\nYour Registration IDs: ${registrationIds.join(', ')}\nJoin the WhatsApp groups for your selected camps:\n${groupLinks}`;
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+        
+        // Open WhatsApp with the pre-filled message
+        window.open(whatsappUrl, '_blank');
+        
+        form.reset();
+        updateSelectedCamps();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Registration failed. Please try again or contact support.\nError: ' + error.message);
+    })
+    .finally(() => {
+        submitBtn.innerHTML = originalBtnText;
+        submitBtn.disabled = false;
+    });
+}
         // Generate PDF receipt
         function generatePDF(registrationIds) {
             const { jsPDF } = window.jspdf;
@@ -1559,7 +1560,7 @@
                 doc.text(`Total Fees: ₹${totalCost}`, 20, 90);
                 
                 // Add QR code
-                doc.addImage(qrCodeDataURL, 'PNG', 150, 40, 35, 35);
+                doc.addImage(qrCodeDataURL, 'PNG', 150, 44, 35, 35);
                 doc.setTextColor(100);
                 doc.setFontSize(8);
                 doc.text('Scan QR code to verify registration', 155, 90, { align: 'center' });
