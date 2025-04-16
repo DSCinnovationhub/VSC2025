@@ -144,7 +144,7 @@
             color: white;
             font-size: 1.2rem;
             transition: all 0.3s ease;
-            positionancel relative;
+            position: relative;
             overflow: hidden;
         }
 
@@ -518,6 +518,7 @@
             display: flex;
             gap: 1rem;
             margin-bottom: 2rem;
+            align-items: flex-end;
         }
 
         .stats-select {
@@ -548,6 +549,10 @@
             text-transform: uppercase;
             font-size: 0.8rem;
             letter-spacing: 1px;
+        }
+
+        .stats-table td {
+            color: var(--text-primary);
         }
 
         .stats-table tr:last-child td {
@@ -1004,7 +1009,7 @@
                         <i class="fas fa-calendar"></i>
                         Select Year
                     </label>
-                    <select id="yearSelector" class="form-control">
+                    <select id="yearSelector" class="form-control" required>
                         <option value="" disabled selected>Select Year</option>
                     </select>
                 </div>
@@ -1181,14 +1186,18 @@
             authenticateUser();
         });
 
-        // Populate year selector
+        // Populate year selector with years from 2023 to current year
         function populateYearSelector() {
             const yearSelector = document.getElementById("yearSelector");
             const currentYear = new Date().getFullYear();
-            const option = document.createElement("option");
-            option.value = currentYear;
-            option.textContent = currentYear;
-            yearSelector.appendChild(option);
+            const startYear = 2023; // Starting from 2023 as a reasonable range
+            
+            for (let year = currentYear; year >= startYear; year--) {
+                const option = document.createElement("option");
+                option.value = year;
+                option.textContent = year;
+                yearSelector.appendChild(option);
+            }
         }
 
         // Handle year selection for statistics
@@ -1197,6 +1206,11 @@
             
             if (selectedYear) {
                 fetchStatistics(selectedYear);
+            } else {
+                // Reset table if no year is selected
+                document.querySelectorAll('#statistics td:nth-child(2)').forEach(cell => {
+                    cell.textContent = '0';
+                });
             }
         }
 
@@ -1205,48 +1219,55 @@
             checkAndFetchStatistics();
         });
 
-        // Fetch statistics
+        // Fetch statistics from Google Apps Script
         function fetchStatistics(year) {
-            const scriptUrl = 'https://script.google.com/macros/s/AKfycbyp0hkPc2vDg6Pgy4mQGm3rY-30rWf5SAejrI8OtN5JCMVIeU_4uQYyLb8-3TMW_ETJ/exec';
+            const scriptUrl = 'https://script.google.com/macros/s/AKfycbx-IHK1eBkf1mfo3OWvVqQsrrLT6qH9GW0XO05xqR9SnbdgvT2ER_lbmhxF0WiDVbz41g/exec';
             
             // Show loading state
             document.querySelectorAll('#statistics td:nth-child(2)').forEach(cell => {
                 cell.textContent = 'Loading...';
+                cell.style.color = 'var(--text-secondary)';
             });
             
             fetch(`${scriptUrl}?year=${year}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.error) {
-                    throw new Error(data.error);
-                }
-                
-                // Update the statistics table
-                document.getElementById("scienceToyTotal").textContent = data["Science Toy"] || 0;
-                document.getElementById("physicsTotal").textContent = data["Physics"] || 0;
-                document.getElementById("lifeScienceTotal").textContent = data["Life Science"] || 0;
-                document.getElementById("chemistryTotal").textContent = data["Chemistry"] || 0;
-                document.getElementById("mathematicsTotal").textContent = data["Mathematics"] || 0;
-                document.getElementById("arduinoTotal").textContent = data["Arduino"] || 0;
-                document.getElementById("electronicsTotal").textContent = data["Electronics & Application"] || 0;
-                document.getElementById("fantasticityTotal").textContent = data["Fantasticity Electricity"] || 0;
-                document.getElementById("roboticsTotal").textContent = data["Robotics"] || 0;
-                document.getElementById("astronomyTotal").textContent = data["Astronomy"] || 0;
-            })
-            .catch(error => {
-                console.error('Error fetching statistics:', error);
-                alert('Error loading statistics: ' + error.message);
-                
-                // Reset counts to 0 on error
-                document.querySelectorAll('#statistics td:nth-child(2)').forEach(cell => {
-                    cell.textContent = '0';
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    
+                    // Update the statistics table with fetched data
+                    document.getElementById("scienceToyTotal").textContent = data["Science Toy"] || 0;
+                    document.getElementById("physicsTotal").textContent = data["Physics"] || 0;
+                    document.getElementById("lifeScienceTotal").textContent = data["Life Science"] || 0;
+                    document.getElementById("chemistryTotal").textContent = data["Chemistry"] || 0;
+                    document.getElementById("mathematicsTotal").textContent = data["Mathematics"] || 0;
+                    document.getElementById("arduinoTotal").textContent = data["Arduino"] || 0;
+                    document.getElementById("electronicsTotal").textContent = data["Electronics & Application"] || 0;
+                    document.getElementById("fantasticityTotal").textContent = data["Fantasticity Electricity"] || 0;
+                    document.getElementById("roboticsTotal").textContent = data["Robotics"] || 0;
+                    document.getElementById("astronomyTotal").textContent = data["Astronomy"] || 0;
+                    
+                    // Restore text color
+                    document.querySelectorAll('#statistics td:nth-child(2)').forEach(cell => {
+                        cell.style.color = 'var(--text-primary)';
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching statistics:', error);
+                    alert('Error loading statistics: ' + error.message);
+                    
+                    // Reset counts to 0 on error
+                    document.querySelectorAll('#statistics td:nth-child(2)').forEach(cell => {
+                        cell.textContent = '0';
+                        cell.style.color = 'var(--text-primary)';
+                    });
                 });
-            });
         }
 
         // Update date and time display
@@ -1318,10 +1339,15 @@
             setTimeout(() => {
                 document.getElementById(sectionId).classList.remove('fade-in');
             }, 800);
+            
+            // If statistics section is shown, fetch data for the selected year
+            if (sectionId === 'statistics') {
+                checkAndFetchStatistics();
+            }
         }
 
         // Google Sheets integration
-        const googleSheetUrl = 'https://script.google.com/macros/s/AKfycbyp0hkPc2vDg6Pgy4mQGm3rY-30rWf5SAejrI8OtN5JCMVIeU_4uQYyLb8-3TMW_ETJ/exec';
+        const googleSheetUrl = 'https://script.google.com/macros/s/AKfycbx-IHK1eBkf1mfo3OWvVqQsrrLT6qH9GW0XO05xqR9SnbdgvT2ER_lbmhxF0WiDVbz41g/exec';
 
         // Mapping of camps to WhatsApp group links
         const campGroupLinks = {
