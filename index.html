@@ -776,14 +776,14 @@
                     <div class="camp-options">
                         <!-- Science Toy -->
                         <div class="camp-option">
-                            <input type="checkbox" id="camp-science-toy" name="camps" value="Science Toy" class="camp-checkbox">
-                            <label for="camp-science-toy" class="camp-label" title="Explore the science behind toys">
+                            <input type="checkbox" id="camp-science-toy-2nd" name="camps" value="Science Toy 2nd Batch" class="camp-checkbox">
+                            <label for="camp-science-toy-2nd" class="camp-label" title="Explore the science behind toys">
                                 <div class="camp-icon">
                                     <i class="fas fa-robot"></i>
                                 </div>
                                 <div class="camp-info">
-                                    <div class="camp-name">Science Toy</div>
-                                    <div class="camp-schedule">9AM to 11AM, 16-19 May</div>
+                                    <div class="camp-name">Science Toy 2nd Batch</div>
+                                    <div class="camp-schedule">4PM to 6PM, 28-31 May</div>
                                 </div>
                             </label>
                         </div>
@@ -1027,6 +1027,13 @@
                         <td>Science Toy</td>
                         <td id="scienceToyTotal">0</td>
                     </tr>
+
+<tr>
+                        <td>Science Toy 2nd Batch</td>
+                        <td id="scienceToy2ndTotal">0</td>
+                    </tr>
+
+
                     <tr>
                         <td>Physics</td>
                         <td id="physicsTotal">0</td>
@@ -1243,6 +1250,7 @@
                     
                     // Update the statistics table with fetched data
                     document.getElementById("scienceToyTotal").textContent = data["Science Toy"] || 0;
+		    document.getElementById("scienceToy2ndTotal").textContent = data["Science Toy 2nd Batch"] || 0;
                     document.getElementById("physicsTotal").textContent = data["Physics"] || 0;
                     document.getElementById("lifeScienceTotal").textContent = data["Life Science"] || 0;
                     document.getElementById("chemistryTotal").textContent = data["Chemistry"] || 0;
