@@ -538,7 +538,7 @@ const watermarkImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAApcAAAKXCA
                 doc.setFont('helvetica', 'bold');
                 doc.setFontSize(16);
                 doc.setTextColor(124, 77, 255);
-                doc.text('Summer Hobby Camp 2025', 105, 10, { align: 'center' });
+                doc.text('Summer Hobby Camp 2026', 105, 10, { align: 'center' });
                 
                 doc.setFontSize(10);
                 doc.setTextColor(100);
@@ -603,7 +603,7 @@ doc.setLineDash([], 0);
  doc.setFont('helvetica', 'bold');
                 doc.setFontSize(16);
                 doc.setTextColor(124, 77, 255);
-                doc.text('Summer Hobby Camp 2025', 105, 82, { align: 'center' });
+                doc.text('Summer Hobby Camp 2026', 105, 82, { align: 'center' });
                 
                 doc.setFontSize(10);
                 doc.setTextColor(100);
