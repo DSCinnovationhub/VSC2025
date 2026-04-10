@@ -207,7 +207,7 @@ document.getElementById("yearSelector").addEventListener("change", function () {
 
 // Fetch statistics from Google Apps Script
 function fetchStatistics(year) {
-    const scriptUrl = 'https://script.google.com/macros/s/AKfycbw5BMMSbTwsztpV3rfrlOR3FAkOy1KdsHhiM3TPTXKa9eVDtaXWOrqiu0cVSAv0i7YsBw/exec';
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycbxut525aTc86lpjeO4Qk4HSJQFHqNXd43ZIaA8CNFu2eqx2ql1ur9hNSvPnA7Whowdw1Q/exec';
 
     // Show loading state
     document.querySelectorAll('#statistics td:nth-child(2)').forEach(cell => {
@@ -228,18 +228,18 @@ function fetchStatistics(year) {
             }
 
             // Update the statistics table with fetched data
-            document.getElementById("scienceToyTotal").textContent = data["Science Toy"] || 0;
-            document.getElementById("scienceToy2ndTotal").textContent = data["Science Toy 2nd Batch"] || 0;
-            document.getElementById("physicsTotal").textContent = data["Physics"] || 0;
-            document.getElementById("lifeScienceTotal").textContent = data["Life Science"] || 0;
-            document.getElementById("chemistryTotal").textContent = data["Chemistry"] || 0;
-            document.getElementById("mathematicsTotal").textContent = data["Mathematics"] || 0;
-            document.getElementById("arduinoTotal").textContent = data["Arduino"] || 0;
-            document.getElementById("electronicsTotal").textContent = data["Electronics & Application"] || 0;
-            document.getElementById("fantasticityTotal").textContent = data["Fantasticity Electricity"] || 0;
-            document.getElementById("roboticsTotal").textContent = data["Robotics"] || 0;
-            document.getElementById("astronomyTotal").textContent = data["Astronomy"] || 0;
-            document.getElementById("mediaLabTotal").textContent = data["The Media Lab"] || 0;
+            document.getElementById("scienceToyTotal").textContent = data["Build It Yourself: Smart Science Toys"] || 0;
+            document.getElementById("scienceToy2ndTotal").textContent = data["Build It Yourself: Smart Science Toys 2nd Batch"] || 0;
+            document.getElementById("physicsTotal").textContent = data["Physics In Real Life"] || 0;
+            document.getElementById("lifeScienceTotal").textContent = data["Inside Life: Exploring Living Systems"] || 0;
+            document.getElementById("chemistryTotal").textContent = data["Chemistry Unfiltered"] || 0;
+            document.getElementById("mathematicsTotal").textContent = data["Maths Decoded"] || 0;
+            document.getElementById("arduinoTotal").textContent = data["Code Meets Hardware: Arduino Basics"] || 0;
+            document.getElementById("electronicsTotal").textContent = data["Gadgets Uncovered: Inside Everyday Electronics"] || 0;
+            document.getElementById("fantasticityTotal").textContent = data["Power Play: Exploring Electricity"] || 0;
+            document.getElementById("roboticsTotal").textContent = data["Build. Code. Control: Robotics in Action"] || 0;
+            document.getElementById("astronomyTotal").textContent = data["Beyond the Sky: Astronomy Made Simple"] || 0;
+            document.getElementById("mediaLabTotal").textContent = data["Create Like a Creator: Inside the Media Lab"] || 0;
 
             // Restore text color
             document.querySelectorAll('#statistics td:nth-child(2)').forEach(cell => {
@@ -343,7 +343,7 @@ function showSection(sectionId) {
 }
 
 // Google Sheets integration
-const googleSheetUrl = 'https://script.google.com/macros/s/AKfycbw5BMMSbTwsztpV3rfrlOR3FAkOy1KdsHhiM3TPTXKa9eVDtaXWOrqiu0cVSAv0i7YsBw/exec';
+const googleSheetUrl = 'https://script.google.com/macros/s/AKfycbxut525aTc86lpjeO4Qk4HSJQFHqNXd43ZIaA8CNFu2eqx2ql1ur9hNSvPnA7Whowdw1Q/exec';
 
 // Mapping of camps to WhatsApp group links
 const campGroupLinks = {
@@ -382,7 +382,7 @@ function generateRegistrationIds(camps) {
             case "Fantasticity Electricity": subjectCode = "F"; break;
             case "Robotics": subjectCode = "R"; break;
             case "Astronomy": subjectCode = "AS"; break;
-            case "The Media Lab": subjectCode = "ML"; break;
+            case " Media Lab": subjectCode = "ML"; break;
             default: subjectCode = "GEN";
         }
 
